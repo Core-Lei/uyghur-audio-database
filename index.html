@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>低资源维吾尔语语音样本库</title>
+  <meta name="description" content="低资源维吾尔语语音合成与关键字段听测样本库" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">AUDIO SAMPLE DATABASE</div>
+      <h1>低资源维吾尔语语音样本库</h1>
+      <p class="subtitle">复杂数字、单位、时间与关键信息传递样本</p>
+      <div class="hero-meta">
+        <span>10 条待整理样本</span><span class="dot">·</span><span>维吾尔语 TTS</span><span class="dot">·</span><span>母语者听测材料</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="summary-grid" aria-label="数据库概览">
+      <div class="summary-card"><span class="summary-label">样本总数</span><strong id="totalCount">10</strong><span class="summary-unit">条</span></div>
+      <div class="summary-card"><span class="summary-label">当前显示</span><strong id="visibleCount">10</strong><span class="summary-unit">条</span></div>
+      <div class="summary-card"><span class="summary-label">音频状态</span><strong id="readyCount">0</strong><span class="summary-unit">已就绪</span></div>
+      <div class="summary-card"><span class="summary-label">页面版本</span><strong>v1.0</strong><span class="summary-unit">静态网页</span></div>
+    </section>
+
+    <section class="toolbar" aria-label="搜索和筛选">
+      <div class="search-wrap">
+        <label for="search">搜索样本</label>
+        <input id="search" type="search" placeholder="输入编号、文本、单位或关键词" autocomplete="off" />
+      </div>
+      <div class="filter-wrap">
+        <label for="category">场景分类</label>
+        <select id="category"><option value="all">全部分类</option></select>
+      </div>
+      <div class="filter-wrap">
+        <label for="phenomenon">语言现象</label>
+        <select id="phenomenon"><option value="all">全部现象</option></select>
+      </div>
+      <button id="clearFilters" class="button secondary" type="button">清除筛选</button>
+    </section>
+
+    <section class="notice">
+      <div class="notice-icon">i</div>
+      <div><strong>使用说明</strong><span>点击任意样本的播放按钮即可试听。手机端建议使用Chrome、Edge或Safari；微信内置浏览器若没有自动播放，请点击播放按钮。音频文件放入本页面同级的 <code>audio</code> 文件夹后，页面会自动显示可播放状态。</span></div>
+    </section>
+
+    <section id="records" class="records" aria-live="polite"></section>
+    <div id="emptyState" class="empty" hidden>没有找到符合条件的样本。</div>
+  </main>
+
+  <footer class="footer"><span>低资源维吾尔语语音合成研究 · 音频样本库</span><span>数据仅用于论文展示与学术交流</span></footer>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
