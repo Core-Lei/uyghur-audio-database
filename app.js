@@ -15,7 +15,7 @@ function render(){
     const el=document.createElement("article"); el.className="record"; const src=escapeHtml(x.file);
     el.innerHTML=`<div class="record-id">${escapeHtml(x.id)}</div><div class="record-main"><h2>${escapeHtml(x.category)}</h2><p class="record-text">${escapeHtml(x.text)}</p><div class="tags"><span class="tag category">${escapeHtml(x.category)}</span><span class="tag format">${escapeHtml(x.format||'音频')}</span>${x.phenomena.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div></div><div class="record-player"><audio controls playsinline preload="none" data-src="${src}" data-type="${mimeFor(x.file)}"><a href="${src}" download>下载音频</a></audio><div class="audio-actions"><button class="play-button" type="button">播放</button><a class="download-link" href="${src}" download>下载原文件</a></div><div class="status pending">点击播放后加载</div></div>`;
     const audio=el.querySelector("audio"), status=el.querySelector(".status"), play=el.querySelector(".play-button"); const ensureLoaded=()=>{if(audio.dataset.loaded)return; const source=document.createElement("source"); source.src=audio.dataset.src; source.type=audio.dataset.type; audio.appendChild(source); audio.dataset.loaded="1"; audio.load()}; audio.addEventListener("pointerdown",ensureLoaded,{passive:true}); audio.addEventListener("touchstart",ensureLoaded,{passive:true}); audio.addEventListener("play",ensureLoaded);
-    audio.addEventListener("loadstart",()=>{status.textContent="正在加载音频…";status.className="status pending"}); audio.addEventListener("loadedmetadata",()=>{status.textContent="音频已就绪 · 可播放";status.className="status ready";updateReady()});
+    audio.addEventListener("loadstart",()=>{if(!audio.dataset.loaded)return;status.textContent="正在加载音频…";status.className="status pending"}); audio.addEventListener("loadedmetadata",()=>{status.textContent="音频已就绪 · 可播放";status.className="status ready";updateReady()});
     audio.addEventListener("canplay",()=>{status.textContent="音频已就绪 · 点击播放";status.className="status ready";updateReady()});
     audio.addEventListener("error",()=>{status.textContent="暂时无法播放，可点击下载或更换浏览器";status.className="status pending"});
     audio.addEventListener("play",()=>{play.textContent="暂停"}); audio.addEventListener("pause",()=>{play.textContent="播放"}); audio.addEventListener("ended",()=>{play.textContent="播放"});
@@ -24,5 +24,6 @@ function render(){
 }
 [searchEl,categoryEl,phenomenonEl].forEach(el=>el.addEventListener("input",render));
 $("#clearFilters").addEventListener("click",()=>{searchEl.value="";categoryEl.value="all";phenomenonEl.value="all";render()}); render();
+
 
 
