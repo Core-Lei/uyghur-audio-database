@@ -4,7 +4,8 @@ const categories = [...new Set(samples.map(x=>x.category))];
 const phenomena = [...new Set(samples.flatMap(x=>x.phenomena))];
 categories.forEach(x=>categoryEl.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`));
 phenomena.forEach(x=>phenomenonEl.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`));
-$("#totalCount").textContent = samples.length;
+  $("#totalCount").textContent = samples.length;
+  $("#heroCount").textContent = samples.length + " 条样本";
 function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));}
 function mimeFor(file){const ext=file.split('.').pop().toLowerCase();return ({mp3:'audio/mpeg',m4a:'audio/mp4',wav:'audio/wav'})[ext]||'audio/*';}
 function matches(x){const q=searchEl.value.trim().toLowerCase(); const cat=categoryEl.value; const ph=phenomenonEl.value; const hay=[x.id,x.text,x.category,...x.phenomena].join(" ").toLowerCase(); return (!q||hay.includes(q))&&(cat==="all"||x.category===cat)&&(ph==="all"||x.phenomena.includes(ph));}
