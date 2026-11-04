@@ -1,9 +1,8 @@
 const $ = (selector) => document.querySelector(selector);
 const recordsEl = $('#records'), searchEl = $('#search'), categoryEl = $('#category'), phenomenonEl = $('#phenomenon'), pageSizeEl = $('#pageSize');
 let currentPage = 1;
-const recordedCount = samples.filter(x => x.kind === 'recorded' && x.file).length;
 $('#totalCount').textContent = samples.length;
-$('#audioCount').textContent = recordedCount;
+$('#phenomenonCount').textContent = new Set(samples.flatMap(x => x.phenomena)).size;
 $('#categoryCount').textContent = new Set(samples.map(x => x.category)).size;
 $('#heroCount').textContent = `${samples.length} 条样本目录`;
 function escapeHtml(value) {
@@ -55,7 +54,7 @@ function render() {
     const hasAudio = sample.kind === 'recorded' && Boolean(sample.file);
     const player = hasAudio
       ? `<audio playsinline preload="none" aria-label="${sample.id} 音频"></audio><div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}">播放</button><a class="download-link" href="${escapeHtml(sample.file)}" download>下载原文件</a></div><div class="status">点击播放后加载</div>`
-      : `<div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}" title="播放界面占位">播放</button></div>`;
+      : `<div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}">播放</button></div>`;
     article.innerHTML = `<div class="record-id">${sample.id}</div><div class="record-main"><h2>${escapeHtml(sample.category)}</h2><p class="record-text">${escapeHtml(sample.text)}</p><div class="tags">${hasAudio ? `<span class="tag format">${escapeHtml(sample.format)}</span>` : ''}${sample.phenomena.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('')}</div></div><div class="record-player">${player}</div>`;
     recordsEl.appendChild(article); if (hasAudio) attachAudio(article, sample);
   }
