@@ -14,7 +14,7 @@ for (const phenomenon of new Set(samples.flatMap(x => x.phenomena))) phenomenonE
 function matches(sample) {
   const query = searchEl.value.trim().toLowerCase();
   const idQuery = /^u\d+$/i.test(query);
-  const text = [sample.id, sample.originalId ? `原${sample.originalId}` : '', sample.text, sample.category, ...sample.phenomena].join(' ').toLowerCase();
+  const text = [sample.id, sample.text, sample.category, ...sample.phenomena].join(' ').toLowerCase();
   return (!query || (idQuery ? sample.id.toLowerCase() === query : text.includes(query)))
     && (categoryEl.value === 'all' || sample.category === categoryEl.value)
     && (phenomenonEl.value === 'all' || sample.phenomena.includes(phenomenonEl.value))
@@ -57,8 +57,8 @@ function render() {
     const badge = hasAudio ? '<span class="tag recorded">真实音频</span>' : '<span class="tag example">文本示例</span>';
     const player = hasAudio
       ? `<audio playsinline preload="none" aria-label="${sample.id} 音频"></audio><div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}">播放</button><a class="download-link" href="${escapeHtml(sample.file)}" download>下载原文件</a></div><div class="status">点击播放后加载</div>`
-      : '<div class="no-audio"><strong>暂无音频</strong><span>生成的文本示例</span></div>';
-    article.innerHTML = `<div class="record-id">${sample.id}${hasAudio ? `<span class="original-id">原编号 ${sample.originalId}</span>` : ''}</div><div class="record-main"><h2>${escapeHtml(sample.category)}</h2><p class="record-text">${escapeHtml(sample.text)}</p><div class="tags">${badge}${hasAudio ? `<span class="tag format">${escapeHtml(sample.format)}</span>` : ''}${sample.phenomena.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('')}</div></div><div class="record-player">${player}</div>`;
+      : `<div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}" title="文本示例">播放</button></div>`;
+    article.innerHTML = `<div class="record-id">${sample.id}</div><div class="record-main"><h2>${escapeHtml(sample.category)}</h2><p class="record-text">${escapeHtml(sample.text)}</p><div class="tags">${badge}${hasAudio ? `<span class="tag format">${escapeHtml(sample.format)}</span>` : ''}${sample.phenomena.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('')}</div></div><div class="record-player">${player}</div>`;
     recordsEl.appendChild(article); if (hasAudio) attachAudio(article, sample);
   }
 }
