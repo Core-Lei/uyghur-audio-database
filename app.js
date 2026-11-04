@@ -1,31 +1,72 @@
-const $ = (s) => document.querySelector(s);
-const recordsEl = $("#records"), emptyEl = $("#emptyState"), searchEl = $("#search"), categoryEl = $("#category"), phenomenonEl = $("#phenomenon");
-const categories = [...new Set(samples.map(x=>x.category))];
-const phenomena = [...new Set(samples.flatMap(x=>x.phenomena))];
-categories.forEach(x=>categoryEl.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`));
-phenomena.forEach(x=>phenomenonEl.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`));
-  $("#totalCount").textContent = samples.length;
-  $("#heroCount").textContent = samples.length + " 条样本";
-function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));}
-function mimeFor(file){const ext=file.split('.').pop().toLowerCase();return ({mp3:'audio/mpeg',m4a:'audio/mp4',wav:'audio/wav'})[ext]||'audio/*';}
-function matches(x){const q=searchEl.value.trim().toLowerCase(); const cat=categoryEl.value; const ph=phenomenonEl.value; const hay=[x.id,x.text,x.category,...x.phenomena].join(" ").toLowerCase(); return (!q||hay.includes(q))&&(cat==="all"||x.category===cat)&&(ph==="all"||x.phenomena.includes(ph));}
-function updateReady(){$("#readyCount").textContent=[...document.querySelectorAll(".status.ready")].length;}
-function render(){
-  const list=samples.filter(matches); recordsEl.innerHTML=""; emptyEl.hidden=list.length!==0; $("#visibleCount").textContent=list.length;
-  list.forEach(x=>{
-    const el=document.createElement("article"); el.className="record"; const src=escapeHtml(x.file);
-    el.innerHTML=`<div class="record-id">${escapeHtml(x.id)}</div><div class="record-main"><h2>${escapeHtml(x.category)}</h2><p class="record-text">${escapeHtml(x.text)}</p><div class="tags"><span class="tag category">${escapeHtml(x.category)}</span><span class="tag format">${escapeHtml(x.format||'音频')}</span>${x.phenomena.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div></div><div class="record-player"><audio playsinline preload="none" data-src="${src}" data-type="${mimeFor(x.file)}"><a href="${src}" download>下载音频</a></audio><div class="audio-actions"><button class="play-button" type="button">播放</button><a class="download-link" href="${src}" download>下载原文件</a></div><div class="status pending">点击播放后加载</div></div>`;
-    const audio=el.querySelector("audio"), status=el.querySelector(".status"), play=el.querySelector(".play-button"); const ensureLoaded=()=>{if(audio.dataset.loaded)return; const source=document.createElement("source"); audio.controls=true; source.src=audio.dataset.src; source.type=audio.dataset.type; audio.appendChild(source); audio.dataset.loaded="1"; audio.load()}; audio.addEventListener("pointerdown",ensureLoaded,{passive:true}); audio.addEventListener("touchstart",ensureLoaded,{passive:true}); audio.addEventListener("play",ensureLoaded);
-    audio.addEventListener("loadstart",()=>{if(!audio.dataset.loaded)return;status.textContent="正在加载音频…";status.className="status pending"}); audio.addEventListener("loadedmetadata",()=>{status.textContent="音频已就绪 · 可播放";status.className="status ready";updateReady()});
-    audio.addEventListener("canplay",()=>{status.textContent="音频已就绪 · 点击播放";status.className="status ready";updateReady()});
-    audio.addEventListener("error",()=>{status.textContent="暂时无法播放，可点击下载或更换浏览器";status.className="status pending"});
-    audio.addEventListener("play",()=>{play.textContent="暂停"}); audio.addEventListener("pause",()=>{play.textContent="播放"}); audio.addEventListener("ended",()=>{play.textContent="播放"});
-    play.addEventListener("click",()=>{if(audio.paused){ensureLoaded();status.textContent="正在加载音频…";status.className="status pending";const p=audio.play();if(p&&p.catch)p.catch(()=>{status.textContent="浏览器阻止播放，请使用上方播放器按钮"})}else audio.pause()}); recordsEl.appendChild(el);
-  }); updateReady();
+const $ = (selector) => document.querySelector(selector);
+const recordsEl = $('#records'), searchEl = $('#search'), categoryEl = $('#category'), phenomenonEl = $('#phenomenon'), availabilityEl = $('#availability'), pageSizeEl = $('#pageSize');
+let currentPage = 1;
+const recordedCount = samples.filter(x => x.kind === 'recorded' && x.file).length;
+$('#totalCount').textContent = samples.length;
+$('#audioCount').textContent = recordedCount;
+$('#exampleCount').textContent = samples.length - recordedCount;
+$('#heroCount').textContent = `${samples.length} 条目录 · ${recordedCount} 条真实音频`;
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
-[searchEl,categoryEl,phenomenonEl].forEach(el=>el.addEventListener("input",render));
-$("#clearFilters").addEventListener("click",()=>{searchEl.value="";categoryEl.value="all";phenomenonEl.value="all";render()}); render();
-
-
-
-
+for (const category of new Set(samples.map(x => x.category))) categoryEl.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`);
+for (const phenomenon of new Set(samples.flatMap(x => x.phenomena))) phenomenonEl.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(phenomenon)}">${escapeHtml(phenomenon)}</option>`);
+function matches(sample) {
+  const query = searchEl.value.trim().toLowerCase();
+  const idQuery = /^u\d+$/i.test(query);
+  const text = [sample.id, sample.originalId ? `原${sample.originalId}` : '', sample.text, sample.category, ...sample.phenomena].join(' ').toLowerCase();
+  return (!query || (idQuery ? sample.id.toLowerCase() === query : text.includes(query)))
+    && (categoryEl.value === 'all' || sample.category === categoryEl.value)
+    && (phenomenonEl.value === 'all' || sample.phenomena.includes(phenomenonEl.value))
+    && (availabilityEl.value === 'all' || sample.kind === availabilityEl.value);
+}
+function attachAudio(article, sample) {
+  const audio = article.querySelector('audio'), play = article.querySelector('.play-button'), status = article.querySelector('.status');
+  function ensureLoaded() {
+    if (audio.dataset.loaded) return;
+    audio.src = sample.file; audio.controls = true; audio.dataset.loaded = '1'; audio.load();
+  }
+  audio.addEventListener('loadedmetadata', () => { status.textContent = '音频已就绪'; status.className = 'status ready'; });
+  audio.addEventListener('error', () => { status.textContent = '暂时无法播放，请重试或下载原文件'; status.className = 'status pending'; });
+  audio.addEventListener('play', () => {
+    document.querySelectorAll('audio').forEach(other => { if (other !== audio) other.pause(); });
+    play.textContent = '暂停';
+  });
+  audio.addEventListener('pause', () => { play.textContent = '播放'; });
+  audio.addEventListener('ended', () => { play.textContent = '播放'; });
+  play.addEventListener('click', () => {
+    if (!audio.paused) { audio.pause(); return; }
+    ensureLoaded(); status.textContent = '正在加载音频…';
+    audio.play().catch(() => { if (!audio.error) status.textContent = '请点击播放器重试，或下载原文件'; });
+  });
+}
+function render() {
+  document.querySelectorAll('audio').forEach(audio => audio.pause());
+  const filtered = samples.filter(matches), size = Number(pageSizeEl.value);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / size));
+  currentPage = Math.min(currentPage, pageCount);
+  const start = (currentPage - 1) * size, visible = filtered.slice(start, start + size);
+  recordsEl.replaceChildren(); $('#emptyState').hidden = filtered.length !== 0;
+  $('#resultSummary').textContent = filtered.length ? `共 ${filtered.length} 条结果 · 显示第 ${start + 1}–${start + visible.length} 条` : '共 0 条结果';
+  $('#pageInfo').textContent = `第 ${currentPage} / ${pageCount} 页`;
+  $('#prevPage').disabled = currentPage === 1; $('#nextPage').disabled = currentPage === pageCount;
+  $('#pageJump').max = pageCount; $('#pageJump').value = currentPage;
+  for (const sample of visible) {
+    const article = document.createElement('article'); article.className = 'record'; article.dataset.id = sample.id;
+    const hasAudio = sample.kind === 'recorded' && Boolean(sample.file);
+    const badge = hasAudio ? '<span class="tag recorded">真实音频</span>' : '<span class="tag example">文本示例</span>';
+    const player = hasAudio
+      ? `<audio playsinline preload="none" aria-label="${sample.id} 音频"></audio><div class="audio-actions"><button class="play-button" type="button" aria-label="播放 ${sample.id}">播放</button><a class="download-link" href="${escapeHtml(sample.file)}" download>下载原文件</a></div><div class="status">点击播放后加载</div>`
+      : '<div class="no-audio"><strong>暂无音频</strong><span>生成的文本示例</span></div>';
+    article.innerHTML = `<div class="record-id">${sample.id}${hasAudio ? `<span class="original-id">原编号 ${sample.originalId}</span>` : ''}</div><div class="record-main"><h2>${escapeHtml(sample.category)}</h2><p class="record-text">${escapeHtml(sample.text)}</p><div class="tags">${badge}${hasAudio ? `<span class="tag format">${escapeHtml(sample.format)}</span>` : ''}${sample.phenomena.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('')}</div></div><div class="record-player">${player}</div>`;
+    recordsEl.appendChild(article); if (hasAudio) attachAudio(article, sample);
+  }
+}
+function resetPage() { currentPage = 1; render(); }
+[searchEl, categoryEl, phenomenonEl, availabilityEl, pageSizeEl].forEach(element => element.addEventListener('input', resetPage));
+$('#clearFilters').addEventListener('click', () => { searchEl.value = ''; categoryEl.value = 'all'; phenomenonEl.value = 'all'; availabilityEl.value = 'all'; resetPage(); });
+function navigate(page) { currentPage = page; render(); $('#resultsTop').scrollIntoView({block:'start'}); }
+$('#prevPage').addEventListener('click', () => navigate(Math.max(1, currentPage - 1)));
+$('#nextPage').addEventListener('click', () => navigate(currentPage + 1));
+$('#jumpForm').addEventListener('submit', event => { event.preventDefault(); const page = Number($('#pageJump').value); if (Number.isInteger(page) && page >= 1) navigate(page); });
+render();

@@ -3,58 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>低资源维吾尔语语音样本库</title>
-  <meta name="description" content="低资源维吾尔语语音合成与关键字段听测样本库" />
-  <link rel="stylesheet" href="style.css" />
+  <title>维吾尔语语音与文本样本库</title>
+  <meta name="description" content="68 条真实维吾尔语音频及 432 条无音频文本示例，支持分类筛选和分页浏览。" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
-  <header class="hero">
-    <div class="hero-inner">
-      <div class="eyebrow">AUDIO SAMPLE DATABASE</div>
-      <h1>低资源维吾尔语语音样本库</h1>
-      <p class="subtitle">复杂数字、单位、时间与关键信息传递样本</p>
-      <div class="hero-meta">
-        <span id="heroCount">68 条样本</span><span class="dot">·</span><span>维吾尔语 TTS</span><span class="dot">·</span><span>母语者听测材料</span>
-      </div>
-    </div>
-  </header>
-
+  <header class="hero"><div class="hero-inner">
+    <div class="eyebrow">AUDIO & TEXT SAMPLE DATABASE</div>
+    <h1>低资源维吾尔语语音与文本样本库</h1>
+    <p class="subtitle">复杂数字、单位、时间与关键信息传递样本</p>
+    <div class="hero-meta"><span id="heroCount">500 条目录 · 68 条真实音频</span><span class="dot">·</span><span>维吾尔语 TTS</span></div>
+  </div></header>
   <main class="page">
     <section class="summary-grid" aria-label="数据库概览">
-      <div class="summary-card"><span class="summary-label">样本总数</span><strong id="totalCount">68</strong><span class="summary-unit">条</span></div>
-      <div class="summary-card"><span class="summary-label">当前显示</span><strong id="visibleCount">68</strong><span class="summary-unit">条</span></div>
-      <div class="summary-card"><span class="summary-label">音频状态</span><strong id="readyCount">0</strong><span class="summary-unit">已就绪</span></div>
-      <div class="summary-card"><span class="summary-label">页面版本</span><strong>v1.2</strong><span class="summary-unit">静态网页</span></div>
+      <div class="summary-card"><span class="summary-label">目录总数</span><strong id="totalCount">500</strong><span class="summary-unit">条</span></div>
+      <div class="summary-card"><span class="summary-label">真实音频 · U1–U68</span><strong id="audioCount">68</strong><span class="summary-unit">条</span></div>
+      <div class="summary-card"><span class="summary-label">文本示例 · U69–U500</span><strong id="exampleCount">432</strong><span class="summary-unit">条 · 无音频</span></div>
+      <div class="summary-card"><span class="summary-label">页面版本</span><strong>v2.0</strong><span class="summary-unit">分页目录</span></div>
     </section>
-
     <section class="toolbar" aria-label="搜索和筛选">
-      <div class="search-wrap">
-        <label for="search">搜索样本</label>
-        <input id="search" type="search" placeholder="输入编号、文本、单位或关键词" autocomplete="off" />
-      </div>
-      <div class="filter-wrap">
-        <label for="category">场景分类</label>
-        <select id="category"><option value="all">全部分类</option></select>
-      </div>
-      <div class="filter-wrap">
-        <label for="phenomenon">语言现象</label>
-        <select id="phenomenon"><option value="all">全部现象</option></select>
-      </div>
+      <div class="search-wrap"><label for="search">搜索样本</label><input id="search" type="search" placeholder="输入 U 编号、文本或关键词" autocomplete="off" /></div>
+      <div class="filter-wrap"><label for="category">场景分类</label><select id="category"><option value="all">全部分类</option></select></div>
+      <div class="filter-wrap"><label for="phenomenon">语言现象</label><select id="phenomenon"><option value="all">全部现象</option></select></div>
+      <div class="filter-wrap"><label for="availability">样本类型</label><select id="availability"><option value="all">全部类型</option><option value="recorded">真实音频</option><option value="text-example">文本示例 · 无音频</option></select></div>
       <button id="clearFilters" class="button secondary" type="button">清除筛选</button>
     </section>
-
-    <section class="notice">
-      <div class="notice-icon">i</div>
-      <div><strong>使用说明</strong><span>点击任意样本的播放按钮即可试听。手机端建议使用Chrome、Edge或Safari；微信内置浏览器若没有自动播放，请点击播放按钮。音频文件与本页面放在同一目录后，点击播放即可试听。</span></div>
-    </section>
-
-    <section id="records" class="records" aria-live="polite"></section>
-    <div id="emptyState" class="empty" hidden>没有找到符合条件的样本。</div>
+    <section class="notice"><div class="notice-icon">i</div><div><strong>目录说明</strong><span>U1–U68 为已有真实音频，按原编号升序重新编号，音频内容保留。U69–U500 为生成的文本示例，尚无音频，不计入真实音频数量。点击“播放”可试听有音频的条目。</span></div></section>
+    <div id="resultsTop" class="results-top">
+      <p id="resultSummary" role="status" aria-live="polite"></p>
+      <label class="page-size" for="pageSize">每页 <select id="pageSize"><option value="10">10 条</option><option value="20" selected>20 条</option></select></label>
+    </div>
+    <section id="records" class="records" aria-label="样本列表"></section>
+    <div id="emptyState" class="empty" hidden>没有找到符合条件的样本，请调整搜索或筛选。</div>
+    <nav class="pagination" aria-label="样本分页">
+      <button id="prevPage" class="button secondary" type="button">上一页</button>
+      <span id="pageInfo" aria-live="polite"></span>
+      <button id="nextPage" class="button secondary" type="button">下一页</button>
+      <form id="jumpForm"><label for="pageJump">跳至</label><input id="pageJump" type="number" min="1" max="25" value="1" required aria-label="页码" /><span>页</span><button class="button secondary" type="submit">前往</button></form>
+    </nav>
+    <noscript><p class="notice">请启用 JavaScript 以浏览、筛选和播放样本。</p></noscript>
   </main>
-
-  <footer class="footer"><span>低资源维吾尔语语音合成研究 · 音频样本库</span><span>数据仅用于论文展示与学术交流</span></footer>
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <footer class="footer"><span>低资源维吾尔语语音合成研究 · 样本目录</span><span>真实音频与文本示例分别标注 · v2.0</span></footer>
+  <script src="data.js?v=2"></script><script src="app.js?v=2"></script>
 </body>
 </html>
-
