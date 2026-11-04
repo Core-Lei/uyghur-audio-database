@@ -4,31 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>维吾尔语语音与文本样本库</title>
-  <meta name="description" content="68 条真实维吾尔语音频及 432 条文本示例，支持分类筛选和分页浏览。" />
-  <link rel="stylesheet" href="style.css?v=2.1" />
+  <meta name="description" content="500 条文本样本目录，配套 68 条维吾尔语音频，支持分类筛选和分页浏览。" />
+  <link rel="stylesheet" href="style.css?v=2.2" />
 </head>
 <body>
   <header class="hero"><div class="hero-inner">
     <div class="eyebrow">AUDIO & TEXT SAMPLE DATABASE</div>
     <h1>低资源维吾尔语语音与文本样本库</h1>
     <p class="subtitle">复杂数字、单位、时间与关键信息传递样本</p>
-    <div class="hero-meta"><span id="heroCount">500 条目录 · 68 条真实音频</span><span class="dot">·</span><span>维吾尔语 TTS</span></div>
+    <div class="hero-meta"><span id="heroCount">500 条样本目录</span><span class="dot">·</span><span>维吾尔语 TTS</span></div>
   </div></header>
   <main class="page">
     <section class="summary-grid" aria-label="数据库概览">
-      <div class="summary-card"><span class="summary-label">目录总数</span><strong id="totalCount">500</strong><span class="summary-unit">条</span></div>
-      <div class="summary-card"><span class="summary-label">真实音频 · U1–U68</span><strong id="audioCount">68</strong><span class="summary-unit">条</span></div>
-      <div class="summary-card"><span class="summary-label">文本示例 · U69–U500</span><strong id="exampleCount">432</strong><span class="summary-unit">条</span></div>
-      <div class="summary-card"><span class="summary-label">页面版本</span><strong>v2.1</strong><span class="summary-unit">分页目录</span></div>
+      <div class="summary-card"><span class="summary-label">样本总数</span><strong id="totalCount">500</strong><span class="summary-unit">条文本</span></div>
+      <div class="summary-card"><span class="summary-label">配套音频</span><strong id="audioCount">68</strong><span class="summary-unit">条</span></div>
+      <div class="summary-card"><span class="summary-label">场景分类</span><strong id="categoryCount">9</strong><span class="summary-unit">类</span></div>
+      <div class="summary-card"><span class="summary-label">页面版本</span><strong>v2.2</strong><span class="summary-unit">分页目录</span></div>
     </section>
     <section class="toolbar" aria-label="搜索和筛选">
       <div class="search-wrap"><label for="search">搜索样本</label><input id="search" type="search" placeholder="输入 U 编号、文本或关键词" autocomplete="off" /></div>
       <div class="filter-wrap"><label for="category">场景分类</label><select id="category"><option value="all">全部分类</option></select></div>
       <div class="filter-wrap"><label for="phenomenon">语言现象</label><select id="phenomenon"><option value="all">全部现象</option></select></div>
-      <div class="filter-wrap"><label for="availability">样本类型</label><select id="availability"><option value="all">全部类型</option><option value="recorded">真实音频</option><option value="text-example">文本示例</option></select></div>
       <button id="clearFilters" class="button secondary" type="button">清除筛选</button>
     </section>
-    <section class="notice"><div class="notice-icon">i</div><div><strong>目录说明</strong><span>U1–U68 为真实音频，可点击播放试听。U69–U500 为文本示例，播放按钮仅作界面展示。支持按编号、场景分类和语言现象搜索与筛选。</span></div></section>
+    <section class="notice"><div class="notice-icon">i</div><div><strong>目录说明</strong><span>目录包含 500 条文本，配套音频 68 条；其余条目的播放按钮为界面占位。支持按编号、场景分类和语言现象搜索与筛选。</span></div></section>
     <div id="resultsTop" class="results-top">
       <p id="resultSummary" role="status" aria-live="polite"></p>
       <label class="page-size" for="pageSize">每页 <select id="pageSize"><option value="10">10 条</option><option value="20" selected>20 条</option></select></label>
@@ -43,7 +42,7 @@
     </nav>
     <noscript><p class="notice">请启用 JavaScript 以浏览、筛选和播放样本。</p></noscript>
   </main>
-  <footer class="footer"><span>低资源维吾尔语语音合成研究 · 样本目录</span><span>真实音频与文本示例分别标注 · v2.1</span></footer>
-  <script src="data.js?v=2.1"></script><script src="app.js?v=2.1"></script>
+  <footer class="footer"><span>低资源维吾尔语语音合成研究 · 样本目录</span><span>按场景与语言现象检索 · v2.2</span></footer>
+  <script src="data.js?v=2.2"></script><script src="app.js?v=2.2"></script>
 </body>
 </html>
